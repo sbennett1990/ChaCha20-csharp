@@ -142,7 +142,7 @@ namespace ChaCha20Cipher {
         }
 
         /// <summary>
-        /// Access the state of the cipher. Read-Only. 
+        /// Access the ChaCha state. Read-Only. 
         /// </summary>
         public uint[] State {
             get {
