@@ -29,11 +29,7 @@ using System.Text;
 
 namespace ChaCha20Cipher {
     public sealed class ChaCha20Cipher : IDisposable {
-        // These are the same constants defined in the reference implementation
-        // see http://cr.yp.to/streamciphers/timings/estreambench/submissions/salsa20/chacha8/ref/chacha.c
-        private static readonly byte[] sigma = Encoding.ASCII.GetBytes("expand 32-byte k");
-        private static readonly byte[] tau   = Encoding.ASCII.GetBytes("expand 16-byte k");
-
+        
         /// <summary>
         /// The ChaCha20 state (aka "context")
         /// </summary>
@@ -89,6 +85,11 @@ namespace ChaCha20Cipher {
                     "Key length must be 32. Actual is " + key.Length.ToString()
                 );
             }
+			
+			// These are the same constants defined in the reference implementation
+            // see http://cr.yp.to/streamciphers/timings/estreambench/submissions/salsa20/chacha8/ref/chacha.c
+            byte[] sigma = Encoding.ASCII.GetBytes("expand 32-byte k");
+            byte[] tau   = Encoding.ASCII.GetBytes("expand 16-byte k");
 
             state[4] = U8To32Little(key, 0);
             state[5] = U8To32Little(key, 4);
@@ -146,7 +147,7 @@ namespace ChaCha20Cipher {
         /// </summary>
         public uint[] State {
             get {
-                if (!isDisposed) {
+                if (state != null) {
                     return this.state;
                 } else {
                     return new uint[16];
