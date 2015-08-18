@@ -85,8 +85,8 @@ namespace ChaCha20Cipher {
                     "Key length must be 32. Actual is " + key.Length.ToString()
                 );
             }
-			
-			// These are the same constants defined in the reference implementation
+
+            // These are the same constants defined in the reference implementation
             // see http://cr.yp.to/streamciphers/timings/estreambench/submissions/salsa20/chacha8/ref/chacha.c
             byte[] sigma = Encoding.ASCII.GetBytes("expand 32-byte k");
             byte[] tau   = Encoding.ASCII.GetBytes("expand 16-byte k");
