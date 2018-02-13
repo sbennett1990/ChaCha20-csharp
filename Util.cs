@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2015, 2018 Scott Bennett
- * 
+ *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
@@ -15,13 +15,12 @@
  */
 
 using System;
-using System.Text;
 
 namespace ChaCha20Cipher {
     public class Util {
         /// <summary>
-        /// n-bit left rotation operation (towards the high bits) for 32-bit 
-        /// integers. 
+        /// n-bit left rotation operation (towards the high bits) for 32-bit
+        /// integers.
         /// </summary>
         /// <param name="v"></param>
         /// <param name="c"></param>
@@ -33,7 +32,7 @@ namespace ChaCha20Cipher {
         }
 
         /// <summary>
-        /// Unchecked integer exclusive or (XOR) operation. 
+        /// Unchecked integer exclusive or (XOR) operation.
         /// </summary>
         /// <param name="v"></param>
         /// <param name="w"></param>
@@ -43,8 +42,8 @@ namespace ChaCha20Cipher {
         }
 
         /// <summary>
-        /// Unchecked integer addition. The ChaCha spec defines certain operations 
-        /// to use 32-bit unsigned integer addition modulo 2^32. 
+        /// Unchecked integer addition. The ChaCha spec defines certain operations
+        /// to use 32-bit unsigned integer addition modulo 2^32.
         /// </summary>
         /// <remarks>
         /// <remarks>
@@ -59,9 +58,9 @@ namespace ChaCha20Cipher {
         }
 
         /// <summary>
-        /// Add 1 to the input parameter using unchecked integer addition. The 
-        /// ChaCha spec defines certain operations to use 32-bit unsigned integer 
-        /// addition modulo 2^32. 
+        /// Add 1 to the input parameter using unchecked integer addition. The
+        /// ChaCha spec defines certain operations to use 32-bit unsigned integer
+        /// addition modulo 2^32.
         /// </summary>
         /// <remarks>
         /// See <a href="https://tools.ietf.org/html/rfc7539#page-4">ChaCha20 Spec Section 2.1</a>.
@@ -73,8 +72,8 @@ namespace ChaCha20Cipher {
         }
 
         /// <summary>
-        /// Convert four bytes of the input buffer into an unsigned 
-        /// 32-bit integer, beginning at the inputOffset. 
+        /// Convert four bytes of the input buffer into an unsigned
+        /// 32-bit integer, beginning at the inputOffset.
         /// </summary>
         /// <param name="p"></param>
         /// <param name="inputOffset"></param>
@@ -89,16 +88,16 @@ namespace ChaCha20Cipher {
         }
 
         /// <summary>
-        /// Serialize the input integer into the output buffer. The input integer 
-        /// will be split into 4 bytes and put into four sequential places in the 
-        /// output buffer, starting at the outputOffset. 
+        /// Serialize the input integer into the output buffer. The input integer
+        /// will be split into 4 bytes and put into four sequential places in the
+        /// output buffer, starting at the outputOffset.
         /// </summary>
         /// <param name="output"></param>
         /// <param name="input"></param>
         /// <param name="outputOffset"></param>
         public static void ToBytes(byte[] output, uint input, int outputOffset) {
             if (outputOffset < 0) {
-                throw new ArgumentOutOfRangeException("outputOffset", 
+                throw new ArgumentOutOfRangeException("outputOffset",
                     "The buffer offset cannot be negative");
             }
 

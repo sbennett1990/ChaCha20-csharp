@@ -1,6 +1,6 @@
 ﻿/*
  * Copyright (c) 2015, 2018 Scott Bennett
- * 
+ *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
@@ -19,32 +19,32 @@ using System.Text;
 
 namespace ChaCha20Cipher {
     public sealed class ChaCha20Cipher : IDisposable {
-        
+
         /// <summary>
         /// The ChaCha20 state (aka "context")
         /// </summary>
         private uint[] state;
 
         /// <summary>
-        /// Determines if the objects in this class have been disposed of. Set to 
-        /// true by the Dispose() method. 
+        /// Determines if the objects in this class have been disposed of. Set to
+        /// true by the Dispose() method.
         /// </summary>
         private bool isDisposed;
 
         /// <summary>
-        /// Set up a new ChaCha20 state. The lengths of the given parameters are 
-        /// checked before encryption happens. 
+        /// Set up a new ChaCha20 state. The lengths of the given parameters are
+        /// checked before encryption happens.
         /// </summary>
         /// <remarks>
         /// See <a href="https://tools.ietf.org/html/rfc7539#page-10">ChaCha20 Spec Section 2.4</a>
-        /// for a detailed description of the inputs. 
+        /// for a detailed description of the inputs.
         /// </remarks>
         /// <param name="key">
-        /// A 32-byte (256-bit) key, treated as a concatenation of eight 32-bit 
+        /// A 32-byte (256-bit) key, treated as a concatenation of eight 32-bit
         /// little-endian integers
         /// </param>
         /// <param name="nonce">
-        /// A 12-byte (96-bit) nonce, treated as a concatenation of three 32-bit 
+        /// A 12-byte (96-bit) nonce, treated as a concatenation of three 32-bit
         /// little-endian integers
         /// </param>
         /// <param name="counter">
@@ -59,11 +59,11 @@ namespace ChaCha20Cipher {
         }
 
         /// <summary>
-        /// Set up the ChaCha state with the given key. A 32-byte key is required 
-        /// and enforced. 
+        /// Set up the ChaCha state with the given key. A 32-byte key is required
+        /// and enforced.
         /// </summary>
         /// <param name="key">
-        /// A 32-byte (256-bit) key, treated as a concatenation of eight 32-bit 
+        /// A 32-byte (256-bit) key, treated as a concatenation of eight 32-bit
         /// little-endian integers
         /// </param>
         private void KeySetup(byte[] key) {
@@ -81,32 +81,32 @@ namespace ChaCha20Cipher {
             byte[] sigma = Encoding.ASCII.GetBytes("expand 32-byte k");
             byte[] tau   = Encoding.ASCII.GetBytes("expand 16-byte k");
 
-            state[4] = U8To32Little(key, 0);
-            state[5] = U8To32Little(key, 4);
-            state[6] = U8To32Little(key, 8);
-            state[7] = U8To32Little(key, 12);
+            state[4] = Util.U8To32Little(key, 0);
+            state[5] = Util.U8To32Little(key, 4);
+            state[6] = Util.U8To32Little(key, 8);
+            state[7] = Util.U8To32Little(key, 12);
 
             byte[] constants = (key.Length == 32) ? sigma : tau;
             int keyIndex = key.Length - 16;
 
-            state[8]  = U8To32Little(key, keyIndex + 0);
-            state[9]  = U8To32Little(key, keyIndex + 4);
-            state[10] = U8To32Little(key, keyIndex + 8);
-            state[11] = U8To32Little(key, keyIndex + 12);
+            state[8]  = Util.U8To32Little(key, keyIndex + 0);
+            state[9]  = Util.U8To32Little(key, keyIndex + 4);
+            state[10] = Util.U8To32Little(key, keyIndex + 8);
+            state[11] = Util.U8To32Little(key, keyIndex + 12);
 
-            state[0] = U8To32Little(constants, 0);
-            state[1] = U8To32Little(constants, 4);
-            state[2] = U8To32Little(constants, 8);
-            state[3] = U8To32Little(constants, 12);
+            state[0] = Util.U8To32Little(constants, 0);
+            state[1] = Util.U8To32Little(constants, 4);
+            state[2] = Util.U8To32Little(constants, 8);
+            state[3] = Util.U8To32Little(constants, 12);
         }
 
         /// <summary>
-        /// Set up the ChaCha state with the given nonce (aka Initialization Vector 
-        /// or IV) and block counter. A 12-byte nonce and a 4-byte counter are 
-        /// required and enforced. 
+        /// Set up the ChaCha state with the given nonce (aka Initialization Vector
+        /// or IV) and block counter. A 12-byte nonce and a 4-byte counter are
+        /// required and enforced.
         /// </summary>
         /// <param name="nonce">
-        /// A 12-byte (96-bit) nonce, treated as a concatenation of three 32-bit 
+        /// A 12-byte (96-bit) nonce, treated as a concatenation of three 32-bit
         /// little-endian integers
         /// </param>
         /// <param name="counter">
@@ -114,12 +114,12 @@ namespace ChaCha20Cipher {
         /// </param>
         private void IvSetup(byte[] nonce, uint counter) {
             if (nonce == null) {
-                // There has already been some state set up. Clear it before exiting. 
+                // There has already been some state set up. Clear it before exiting.
                 Dispose();
                 throw new ArgumentNullException("Nonce is null");
             }
             if (nonce.Length != 12) {
-                // There has already been some state set up. Clear it before exiting. 
+                // There has already been some state set up. Clear it before exiting.
                 Dispose();
                 throw new ArgumentException(
                     "Nonce length should be 12. Actual is " + nonce.Length.ToString()
@@ -127,13 +127,13 @@ namespace ChaCha20Cipher {
             }
 
             state[12] = counter;
-            state[13] = U8To32Little(nonce, 0);
-            state[14] = U8To32Little(nonce, 4);
-            state[15] = U8To32Little(nonce, 8);
+            state[13] = Util.U8To32Little(nonce, 0);
+            state[14] = Util.U8To32Little(nonce, 4);
+            state[15] = Util.U8To32Little(nonce, 8);
         }
 
         /// <summary>
-        /// Access the ChaCha state. Read-Only. 
+        /// Access the ChaCha state. Read-Only.
         /// </summary>
         public uint[] State {
             get {
@@ -146,16 +146,16 @@ namespace ChaCha20Cipher {
         }
 
         /// <summary>
-        /// Encrypt an arbitrary-length plaintext message (input), writing the 
-        /// resulting ciphertext to the output buffer. The number of bytes to read 
-        /// from the input buffer is determined by numBytes. 
+        /// Encrypt an arbitrary-length plaintext message (input), writing the
+        /// resulting ciphertext to the output buffer. The number of bytes to read
+        /// from the input buffer is determined by numBytes.
         /// </summary>
         /// <param name="output"></param>
         /// <param name="input"></param>
         /// <param name="numBytes"></param>
         public void EncryptBytes(byte[] output, byte[] input, int numBytes) {
             if (isDisposed) {
-                throw new ObjectDisposedException("state", 
+                throw new ObjectDisposedException("state",
                     "The ChaCha state has been cleared (i.e. Dispose() has been called)");
             }
             if (numBytes < 0 || numBytes > input.Length) {
@@ -186,13 +186,13 @@ namespace ChaCha20Cipher {
                 }
 
                 for (int i = 16; i-- > 0; ) {
-                    ToBytes(tmp, Add(x[i], this.state[i]), 4 * i);
+                    Util.ToBytes(tmp, Util.Add(x[i], this.state[i]), 4 * i);
                 }
 
-                this.state[12] = AddOne(state[12]);
+                this.state[12] = Util.AddOne(state[12]);
                 if (this.state[12] <= 0) {
                     /* Stopping at 2^70 bytes per nonce is the user's responsibility */
-                    this.state[13] = AddOne(state[13]);
+                    this.state[13] = Util.AddOne(state[13]);
                 }
 
                 if (numBytes <= 64) {
@@ -213,14 +213,14 @@ namespace ChaCha20Cipher {
         }
 
         /// <summary>
-        /// The ChaCha Quarter Round operation. It operates on four 32-bit unsigned 
-        /// integers within the given buffer at indices a, b, c, and d. 
+        /// The ChaCha Quarter Round operation. It operates on four 32-bit unsigned
+        /// integers within the given buffer at indices a, b, c, and d.
         /// </summary>
         /// <remarks>
-        /// The ChaCha state does not have four integer numbers: it has 16.  So 
-        /// the quarter-round operation works on only four of them -- hence the 
-        /// name.  Each quarter round operates on four predetermined numbers in 
-        /// the ChaCha state. 
+        /// The ChaCha state does not have four integer numbers: it has 16.  So
+        /// the quarter-round operation works on only four of them -- hence the
+        /// name.  Each quarter round operates on four predetermined numbers in
+        /// the ChaCha state.
         /// See <a href="https://tools.ietf.org/html/rfc7539#page-4">ChaCha20 Spec Sections 2.1 - 2.2</a>.
         /// </remarks>
         /// <param name="x">A ChaCha state (vector). Must contain 16 elements.</param>
@@ -236,10 +236,10 @@ namespace ChaCha20Cipher {
                 throw new ArgumentException();
             }
 
-            x[a] = Add(x[a], x[b]); x[d] = Rotate(XOr(x[d], x[a]), 16);
-            x[c] = Add(x[c], x[d]); x[b] = Rotate(XOr(x[b], x[c]), 12);
-            x[a] = Add(x[a], x[b]); x[d] = Rotate(XOr(x[d], x[a]),  8);
-            x[c] = Add(x[c], x[d]); x[b] = Rotate(XOr(x[b], x[c]),  7);
+            x[a] = Util.Add(x[a], x[b]); x[d] = Util.Rotate(Util.XOr(x[d], x[a]), 16);
+            x[c] = Util.Add(x[c], x[d]); x[b] = Util.Rotate(Util.XOr(x[b], x[c]), 12);
+            x[a] = Util.Add(x[a], x[b]); x[d] = Util.Rotate(Util.XOr(x[d], x[a]),  8);
+            x[c] = Util.Add(x[c], x[d]); x[b] = Util.Rotate(Util.XOr(x[b], x[c]),  7);
         }
 
         /// <summary>
@@ -274,36 +274,36 @@ namespace ChaCha20Cipher {
             }
 
             for (int i = 16; i-- > 0; ) {
-                ToBytes(output, Add(x[i], input[i]), 4 * i);
+                Util.ToBytes(output, Util.Add(x[i], input[i]), 4 * i);
             }
         }
 
         #region Destructor and Disposer
 
         /// <summary>
-        /// Clear and dispose of the internal state. The finalizer is only called 
-        /// if Dispose() was never called on this cipher. 
+        /// Clear and dispose of the internal state. The finalizer is only called
+        /// if Dispose() was never called on this cipher.
         /// </summary>
         ~ChaCha20Cipher() {
             Dispose(false);
         }
 
         /// <summary>
-        /// Clear and dispose of the internal state. Also request the GC not to 
-        /// call the finalizer, because all cleanup has been taken care of. 
+        /// Clear and dispose of the internal state. Also request the GC not to
+        /// call the finalizer, because all cleanup has been taken care of.
         /// </summary>
         public void Dispose() {
             Dispose(true);
-            /* 
-             * The Garbage Collector does not need to invoke the finalizer because 
-             * Dispose(bool) has already done all the cleanup needed. 
+            /*
+             * The Garbage Collector does not need to invoke the finalizer because
+             * Dispose(bool) has already done all the cleanup needed.
              */
             GC.SuppressFinalize(this);
         }
 
         /// <summary>
-        /// This method should only be invoked from Dispose() or the finalizer. 
-        /// This handles the actual cleanup of the resources. 
+        /// This method should only be invoked from Dispose() or the finalizer.
+        /// This handles the actual cleanup of the resources.
         /// </summary>
         /// <param name="disposing">
         /// Should be true if called by Dispose(); false if called by the finalizer
@@ -312,11 +312,9 @@ namespace ChaCha20Cipher {
             if (!isDisposed) {
                 if (disposing) {
                     /* Cleanup managed objects by calling their Dispose() methods */
-                    
                 }
 
                 /* Cleanup any unmanaged objects here */
-
                 if (state != null) {
                     Array.Clear(state, 0, state.Length);
                 }
