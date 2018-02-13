@@ -59,6 +59,15 @@ namespace ChaCha20Cipher {
         }
 
         /// <summary>
+        /// The ChaCha20 state (aka "context"). Read-Only.
+        /// </summary>
+        public uint[] State {
+            get {
+                return this.state;
+            }
+        }
+
+        /// <summary>
         /// Set up the ChaCha state with the given key. A 32-byte key is required
         /// and enforced.
         /// </summary>
@@ -72,12 +81,12 @@ namespace ChaCha20Cipher {
             }
             if (key.Length != 32) {
                 throw new ArgumentException(
-                    "Key length must be 32. Actual is " + key.Length.ToString()
+                    $"Key length must be 32. Actual: {key.Length}"
                 );
             }
 
-            // These are the same constants defined in the reference implementation
-            // see http://cr.yp.to/streamciphers/timings/estreambench/submissions/salsa20/chacha8/ref/chacha.c
+            // These are the same constants defined in the reference implementation.
+            // http://cr.yp.to/streamciphers/timings/estreambench/submissions/salsa20/chacha8/ref/chacha.c
             byte[] sigma = Encoding.ASCII.GetBytes("expand 32-byte k");
             byte[] tau   = Encoding.ASCII.GetBytes("expand 16-byte k");
 
@@ -103,7 +112,7 @@ namespace ChaCha20Cipher {
         /// <summary>
         /// Set up the ChaCha state with the given nonce (aka Initialization Vector
         /// or IV) and block counter. A 12-byte nonce and a 4-byte counter are
-        /// required and enforced.
+        /// required.
         /// </summary>
         /// <param name="nonce">
         /// A 12-byte (96-bit) nonce, treated as a concatenation of three 32-bit
@@ -122,7 +131,7 @@ namespace ChaCha20Cipher {
                 // There has already been some state set up. Clear it before exiting.
                 Dispose();
                 throw new ArgumentException(
-                    "Nonce length should be 12. Actual is " + nonce.Length.ToString()
+                    $"Nonce length must be 12. Actual: {nonce.Length}"
                 );
             }
 
@@ -130,19 +139,6 @@ namespace ChaCha20Cipher {
             state[13] = Util.U8To32Little(nonce, 0);
             state[14] = Util.U8To32Little(nonce, 4);
             state[15] = Util.U8To32Little(nonce, 8);
-        }
-
-        /// <summary>
-        /// Access the ChaCha state. Read-Only.
-        /// </summary>
-        public uint[] State {
-            get {
-                if (state != null) {
-                    return this.state;
-                } else {
-                    return new uint[16];
-                }
-            }
         }
 
         /// <summary>
@@ -156,7 +152,7 @@ namespace ChaCha20Cipher {
         public void EncryptBytes(byte[] output, byte[] input, int numBytes) {
             if (isDisposed) {
                 throw new ObjectDisposedException("state",
-                    "The ChaCha state has been cleared (i.e. Dispose() has been called)");
+                    "The ChaCha state has been disposed");
             }
             if (numBytes < 0 || numBytes > input.Length) {
                 throw new ArgumentOutOfRangeException("numBytes",
@@ -202,6 +198,7 @@ namespace ChaCha20Cipher {
 
                     return;
                 }
+
                 for (int i = 64; i-- > 0; ) {
                     output[i + outputOffset] = (byte) (input[i + inputOffset] ^ tmp[i]);
                 }
@@ -230,7 +227,7 @@ namespace ChaCha20Cipher {
         /// <param name="d">Index of the fourth number</param>
         public static void QuarterRound(uint[] x, uint a, uint b, uint c, uint d) {
             if (x == null) {
-                throw new ArgumentNullException("X buffer is null");
+                throw new ArgumentNullException("Input buffer is null");
             }
             if (x.Length != 16) {
                 throw new ArgumentException();
